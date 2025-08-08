@@ -6,12 +6,20 @@ yarn-error.log*
 
 # Build outputs
 dist/
-out/
 build/
 
-# Electron packaged apps
-*.dmg
-*.exe
+# Ignore out/ directory but keep distribution files
+out/*
+!out/make/
+out/make/*
+!out/make/*.dmg
+
+# Keep exe files
+!out/Auto Timer-win32-arm64/
+out/Auto Timer-win32-arm64/*
+!out/Auto Timer-win32-arm64/auto-timer.exe
+
+# Electron packaged apps (keep .dmg and .exe for distribution)
 *.deb
 *.rpm
 *.snap

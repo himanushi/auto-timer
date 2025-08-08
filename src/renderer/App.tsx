@@ -148,12 +148,12 @@ function App() {
       <CssBaseline />
       <Container maxWidth="sm" sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ 
-          pt: window.electronApi.platform.isMac ? 4 : 1, 
+          pt: 1, // 標準タイトルバーを使用するため、全プラットフォームで同じパディング
           flex: 1,
           display: 'flex',
           flexDirection: 'column'
         }}>
-          <Paper sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Paper sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={tabValue} onChange={handleTabChange} centered>
                 <Tab label="タイマー" />
@@ -161,7 +161,7 @@ function App() {
               </Tabs>
             </Box>
             
-            <Box sx={{ flex: 1, overflow: 'auto' }}>
+            <Box sx={{ flex: 1, overflow: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
               <TabPanel value={tabValue} index={0}>
                 <TimerDisplay 
                   timerState={timerState} 

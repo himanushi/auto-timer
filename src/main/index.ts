@@ -30,8 +30,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, '../../assets/icon.png'),
-    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    frame: process.platform !== 'darwin',
+    titleBarStyle: process.platform === 'darwin' ? 'default' : 'default',
+    frame: true, // 全プラットフォームでフレームを表示
   });
 
   // HTMLファイルを読み込み
@@ -44,6 +44,13 @@ function createWindow() {
 
   // ウィンドウが閉じられたとき
   mainWindow.on('closed', () => {
+    // タイマーを停止してリソースをクリーンアップ
+    if (timerManager) {
+      timerManager.stop();
+    }
+    if (activityMonitor) {
+      activityMonitor.stop();
+    }
     mainWindow = null;
   });
 
@@ -117,9 +124,28 @@ app.whenReady().then(() => {
 
 // すべてのウィンドウが閉じられたとき
 app.on('window-all-closed', () => {
+  // リソースをクリーンアップ
+  if (timerManager) {
+    timerManager.stop();
+  }
+  if (activityMonitor) {
+    activityMonitor.stop();
+  }
+  
   // macOSの場合は、アプリケーションをDockに残す
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// アプリケーション終了前のクリーンアップ
+app.on('before-quit', () => {
+  console.log('アプリケーション終了中...');
+  if (timerManager) {
+    timerManager.stop();
+  }
+  if (activityMonitor) {
+    activityMonitor.stop();
   }
 });
 

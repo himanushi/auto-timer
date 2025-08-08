@@ -23,18 +23,10 @@ body {
   overflow: hidden;
 }
 
-/* macOS用のタイトルバー領域 */
-.titlebar-area {
-  -webkit-app-region: drag;
-  height: 32px;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-}
+/* ドラッグ可能領域の設定を削除（標準タイトルバーを使用） */
+/* .titlebar-area は使用しない */
 
-/* ボタンなどはドラッグ対象外 */
+/* ボタンなどのドラッグ防止は維持 */
 button, input, select, textarea, a {
   -webkit-app-region: no-drag;
 }

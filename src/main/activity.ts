@@ -24,21 +24,16 @@ export class ActivityMonitor {
     this.isMonitoring = true;
     this.lastActivity = Date.now();
 
-    // マウス移動の検知（ポーリング方式）
-    // Electronはグローバルマウスイベントを直接サポートしていないため、
-    // 定期的にマウス位置をチェック
-    this.startMouseTracking();
-
-    // キーボードイベントの検知（グローバルショートカットを利用）
-    this.setupKeyboardTracking();
-
-    // アイドル状態のチェック
-    this.startIdleCheck();
-
-    // システムイベントの監視
+    // アクティビティ監視を完全に無効化
+    console.log('アクティビティ監視は無効化されています（手動操作のみ）');
+    
+    // 以下の監視機能をすべて無効化
+    // this.startMouseTracking();
+    // this.setupKeyboardTracking();
+    // this.startIdleCheck();
+    
+    // システムイベントの監視のみ維持（スリープ時の情報表示用）
     this.setupSystemEvents();
-
-    console.log('アクティビティ監視を開始しました');
   }
 
   stop() {
@@ -63,104 +58,110 @@ export class ActivityMonitor {
   }
 
   private startMouseTracking() {
-    // Electronの制限により、完全なグローバルマウストラッキングは困難
-    // ここでは簡易的な実装を行う
-    const { screen } = require('electron');
+    // 自動的なマウストラッキングを無効化
+    // アクティビティベースの自動開始は使いづらいため
+    console.log('マウストラッキングは無効化されています');
     
-    this.mouseInterval = setInterval(() => {
-      try {
-        const currentPosition = screen.getCursorScreenPoint();
-        
-        if (this.lastMousePosition) {
-          if (currentPosition.x !== this.lastMousePosition.x || 
-              currentPosition.y !== this.lastMousePosition.y) {
-            this.onActivity({ type: 'mouse', timestamp: Date.now() });
-          }
-        }
-        
-        this.lastMousePosition = currentPosition;
-      } catch (error) {
-        console.error('マウス位置の取得エラー:', error);
-      }
-    }, 500); // 500msごとにチェック
+    // 以下のコードをコメントアウト
+    // const { screen } = require('electron');
+    // 
+    // this.mouseInterval = setInterval(() => {
+    //   try {
+    //     const currentPosition = screen.getCursorScreenPoint();
+    //     
+    //     if (this.lastMousePosition) {
+    //       if (currentPosition.x !== this.lastMousePosition.x || 
+    //           currentPosition.y !== this.lastMousePosition.y) {
+    //         this.onActivity({ type: 'mouse', timestamp: Date.now() });
+    //       }
+    //     }
+    //     
+    //     this.lastMousePosition = currentPosition;
+    //   } catch (error) {
+    //     console.error('マウス位置の取得エラー:', error);
+    //   }
+    // }, 500); // 500msごとにチェック
   }
 
   private setupKeyboardTracking() {
-    // 一般的なキー入力を検知するための仮想的なショートカット
-    // 実際のグローバルキーボードフックは、セキュリティ上の理由でElectronでは制限がある
-    // より完全な実装には、ネイティブモジュールが必要
-
-    // システムがアクティブな間は、アクティビティとして扱う
-    const checkSystemActivity = () => {
-      const idleTime = powerMonitor.getSystemIdleTime();
-      if (idleTime < 1) {
-        this.onActivity({ type: 'keyboard', timestamp: Date.now() });
-      }
-    };
-
-    setInterval(checkSystemActivity, 1000);
+    // キーボードトラッキングも無効化
+    // 手動でのタイマー開始のみをサポート
+    console.log('キーボードトラッキングは無効化されています');
+    
+    // 以下のコードをコメントアウト
+    // const checkSystemActivity = () => {
+    //   const idleTime = powerMonitor.getSystemIdleTime();
+    //   if (idleTime < 1) {
+    //     this.onActivity({ type: 'keyboard', timestamp: Date.now() });
+    //   }
+    // };
+    //
+    // setInterval(checkSystemActivity, 1000);
   }
 
   private startIdleCheck() {
-    this.checkInterval = setInterval(() => {
-      const settings = this.settingsManager.getAll();
-      const now = Date.now();
-      const idleTime = (now - this.lastActivity) / 1000; // 秒単位
-
-      if (idleTime >= settings.inactivityThreshold) {
-        // アイドル状態になった
-        if (this.timerManager.isRunning()) {
-          console.log(`${settings.inactivityThreshold}秒間操作がないため、タイマーを一時停止します`);
-          this.timerManager.pause();
-        }
-      }
-    }, 5000); // 5秒ごとにチェック
+    // アイドル時の自動停止機能を無効化
+    // 一度開始したタイマーは継続して動作する
+    console.log('アイドルチェックは無効化されています');
+    
+    // 以下のコードをコメントアウト
+    // this.checkInterval = setInterval(() => {
+    //   const settings = this.settingsManager.getAll();
+    //   const now = Date.now();
+    //   const idleTime = (now - this.lastActivity) / 1000; // 秒単位
+    //
+    //   if (idleTime >= settings.inactivityThreshold) {
+    //     // アイドル状態になった
+    //     if (this.timerManager.isRunning()) {
+    //       console.log(`${settings.inactivityThreshold}秒間操作がないため、タイマーを一時停止します`);
+    //       this.timerManager.pause();
+    //     }
+    //   }
+    // }, 5000); // 5秒ごとにチェック
   }
 
   private setupSystemEvents() {
-    // システムのスリープ/復帰イベント
+    // システムイベントの監視は行うが、タイマーの停止は行わない
     powerMonitor.on('suspend', () => {
-      console.log('システムがスリープします');
-      if (this.timerManager.isRunning()) {
-        this.timerManager.pause();
-      }
+      console.log('システムがスリープします（タイマーは継続）');
+      // タイマーの一時停止は行わない
     });
 
     powerMonitor.on('resume', () => {
-      console.log('システムが復帰しました');
-      // 自動的に再開はしない（ユーザーの操作を待つ）
+      console.log('システムが復帰しました（タイマーは継続中）');
     });
 
     // スクリーンのロック/アンロック
     powerMonitor.on('lock-screen', () => {
-      console.log('スクリーンがロックされました');
-      if (this.timerManager.isRunning()) {
-        this.timerManager.pause();
-      }
+      console.log('スクリーンがロックされました（タイマーは継続）');
+      // タイマーの一時停止は行わない
     });
 
     powerMonitor.on('unlock-screen', () => {
-      console.log('スクリーンがアンロックされました');
-      // 自動的に再開はしない（ユーザーの操作を待つ）
+      console.log('スクリーンがアンロックされました（タイマーは継続中）');
     });
   }
 
   private onActivity(event: ActivityEvent) {
     this.lastActivity = event.timestamp;
-
-    const settings = this.settingsManager.getAll();
-
-    // タイマーが停止中で、自動開始が有効な場合
-    if (!this.timerManager.isRunning() && !this.timerManager.isPaused() && settings.autoStart) {
-      console.log('アクティビティを検知しました。タイマーを開始します');
-      this.timerManager.start();
-    }
-
-    // タイマーが一時停止中の場合、再開
-    if (this.timerManager.isPaused()) {
-      console.log('アクティビティを検知しました。タイマーを再開します');
-      this.timerManager.resume();
-    }
+    
+    // 自動開始・自動再開機能を完全に無効化
+    console.log('アクティビティを検知しましたが、自動開始は無効化されています');
+    
+    // 以下のコードをコメントアウト
+    // const settings = this.settingsManager.getAll();
+    //
+    // // タイマーが停止中で、自動開始が有効な場合
+    // if (!this.timerManager.isRunning() && !this.timerManager.isPaused() && settings.autoStart) {
+    //   console.log('アクティビティを検知しました。タイマーを開始します');
+    //   this.timerManager.start();
+    // }
+    //
+    // // タイマーが一時停止中の場合、再開
+    // if (this.timerManager.isPaused()) {
+    //   console.log('アクティビティを検知しました。タイマーを再開します');
+    //   this.timerManager.resume();
+    // }
   }
 
   getLastActivity(): number {

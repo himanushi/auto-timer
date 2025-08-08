@@ -2,7 +2,7 @@ module.exports = {
   packagerConfig: {
     name: 'Auto Timer',
     executableName: 'auto-timer',
-    icon: './assets/icon',
+    // icon: './assets/icon', // アイコンを一時的に無効化
     appBundleId: 'com.example.autotimer',
     appCategoryType: 'public.app-category.productivity',
     asar: true,
@@ -23,21 +23,22 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    {
-      name: '@electron-forge/maker-squirrel',
-      config: {
-        name: 'auto_timer',
-        authors: 'Auto Timer Developer',
-        description: 'Automatic activity-based timer for productivity',
-        exe: 'auto-timer.exe',
-        setupExe: 'AutoTimerSetup.exe',
-        setupIcon: './assets/icon.ico',
-        noMsi: true,
-      },
-    },
+    // {
+    //   name: '@electron-forge/maker-squirrel',
+    //   platforms: ['win32'],
+    //   config: {
+    //     name: 'auto_timer',
+    //     authors: 'Auto Timer Developer',
+    //     description: 'Automatic activity-based timer for productivity',
+    //     exe: 'auto-timer.exe',
+    //     setupExe: 'AutoTimerSetup.exe',
+    //     // setupIcon: './assets/icon.ico', // アイコンを一時的に無効化
+    //     noMsi: true,
+    //   },
+    // },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin', 'linux'],
+      platforms: ['darwin', 'linux', 'win32'],
     },
     {
       name: '@electron-forge/maker-dmg',

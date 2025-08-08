@@ -153,13 +153,25 @@ export class TimerManager {
   }
 
   private onTimerComplete() {
-    console.log('タイマーが完了しました');
+    console.log('🎉 タイマーが完了しました！');
     
-    // 通知を表示
-    this.notificationManager.showTimerCompleteNotification();
+    try {
+      // 通知を表示
+      console.log('通知マネージャーを呼び出し中...');
+      this.notificationManager.showTimerCompleteNotification();
+    } catch (error) {
+      console.error('通知エラー:', error);
+    }
     
-    // レンダラープロセスに通知
-    this.mainWindow.webContents.send(IPC_CHANNELS.TIMER_COMPLETE);
+    try {
+      // レンダラープロセスに通知
+      console.log('レンダラープロセスに完了通知を送信中...');
+      if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+        this.mainWindow.webContents.send(IPC_CHANNELS.TIMER_COMPLETE);
+      }
+    } catch (error) {
+      console.error('レンダラープロセス通知エラー:', error);
+    }
     
     // タイマーを停止
     this.stop();
@@ -177,7 +189,15 @@ export class TimerManager {
 
   private sendStateUpdate() {
     // レンダラープロセスにタイマーの状態を送信
-    this.mainWindow.webContents.send(IPC_CHANNELS.TIMER_UPDATE, this.state);
+    try {
+      if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+        this.mainWindow.webContents.send(IPC_CHANNELS.TIMER_UPDATE, this.state);
+      }
+    } catch (error) {
+      console.error('状態更新の送信エラー:', error);
+      // ウィンドウが破棄されている場合はタイマーを停止
+      this.stop();
+    }
   }
 
   // 残り時間を取得（秒単位）

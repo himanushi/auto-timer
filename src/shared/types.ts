@@ -64,11 +64,11 @@ export const IPC_CHANNELS = {
 
 // デフォルト設定
 export const DEFAULT_SETTINGS: TimerSettings = {
-  duration: 25, // ポモドーロテクニックのデフォルト
+  duration: 1, // テスト用に1分（通知テスト後に25分に戻す）
   soundEnabled: true,
   pushNotificationEnabled: true,
-  flashEnabled: false,
-  autoStart: true,
+  flashEnabled: true,
+  autoStart: false, // 自動開始を無効化（手動操作のみ）
   inactivityThreshold: 30,
   soundVolume: 50,
 };
